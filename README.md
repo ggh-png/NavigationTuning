@@ -24,10 +24,19 @@ global planner is built as a more flexible replacement of navfn with more option
 
 3. more detailed global planner parameters<br>
 Sinceglobalplanneris generally the one that we prefer, let us look at some of its key parameters
-**lethal_cost, neutral_cost, cost_factor are actually determine the quality of the planned global path**
-For lethal_cost, setting it to a low value may result in failure to produce any path, even when a feasible path isobvious. 
+**lethal_cost, neutral_cost, cost_factor are actually determine the quality of the planned global path**<br>
+For lethal_cost, setting it to a low value may result in failure to produce any path, even when a feasible path isobvious.<br> 
 
     cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue
 incoming costmap cost values are in the range 0 to 252.
+#### (real experiment)
 
-  
+this ros navigation default value
+lethal_cost = 253, neutral_cost=50, cost_factor = 3.
+
+this is modified value 
+lethal_cost = 253, neutral_cost=66, cost_factor = 0.55
+
+Experiment Result: as you can see,neutral_cost and cost_factor is important parameter for global planning. it make more smooth global path
+
+reference : https://arxiv.org/pdf/1706.09068.pdf
