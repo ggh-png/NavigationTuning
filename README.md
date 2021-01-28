@@ -17,3 +17,17 @@
 Eventually it passes this valid goal as a plan to the local planner or controller (internally).
 Therefore, **this planner does not do any global path planning.
 It is helpful if you require your robot to move close to the given goaleven if the goal is unreachable.**
+
+2. navfn and global planner<br>
+navfn uses  Dijkstra’s  algorithm  to  find  a  global  path  with  minimum  cost  between start point and end point.
+global planner is built as a more flexible replacement of navfn with more options.
+
+3. more detailed global planner parameters<br>
+Sinceglobalplanneris generally the one that we prefer, let us look at some of its key parameters
+**lethal_cost, neutral_cost, cost_factor are actually determine the quality of the planned global path**
+For lethal_cost, setting it to a low value may result in failure to produce any path, even when a feasible path isobvious. 
+
+    cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue
+incoming costmap cost values are in the range 0 to 252.
+
+  
