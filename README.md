@@ -1,5 +1,5 @@
 # ROS Navigation Tuning Guide
-## velocity
+# velocity
  In ROS navigationstack, local planner takes in odometry messages (”odom” topic) and outputs velocity commands (”cmd_vel” topic) that controls the robot’s motion.
  Max/min  velocity  and  acceleration  are  two  basic  parameters  for  the  mobile  base.Setting  them  correctly  is  very  helpful  for  optimal  local  planner  behavior.
  
@@ -10,7 +10,7 @@
 
  To use the movebase node in navigation stack, we need to have a global planner and a local planner  <hr/>
 
- ## Global Planner
+ # Global Planner
   There are three global planners that adhere to navcore::BaseGlobalPlanner interface :
       carrot_planner , navfn , global_planner
       
@@ -41,12 +41,12 @@ lethal_cost = 253, neutral_cost=66, cost_factor = 0.55
 
 Experiment Result: as you can see,neutral_cost and cost_factor is important parameter for global planning. it make more smooth global path<hr>
 
-## Lobal Planner
+# Local Planner
 Local planners that adhere tonavcore::BaseLocalPlanner interface :  dwa_local_planner , eband_local_planner , teb_local_planner<br>
 They use different algorithms to generate velocity commands. <br>
 we will discuss only dwa_local_planner.(Usually dwa_local_planner is the go to choice.)
 
-### DWA Local Planner 
+## DWA Local Planner 
 dwa_local_planner uses  Dynamic  Window  Approach  (DWA)  algorithm.<br>
  Dynamic  Window  Approach  (DWA)  algorithm Summary Description
  1. sample dx,dy,dtheta
@@ -61,6 +61,7 @@ DWA  maximizes  an  objective  function that depends on (1) the progress to the 
 This DWA planner depends on the local costmap which provides obstacle information. therfore, ***tuning the parameters for the local costmap is crucial for optimal behavior of DWA local planner.*** 
 
 ### Forward Simulation Parameter
+
  In this step, the local planner takes the velocity samples (discard bad guys , select optimal cost).<br>
  Each velocity sampleis  simulated as if it is applied to the robot for a set time interval (sim_time)
  
@@ -70,13 +71,38 @@ This DWA planner depends on the local costmap which provides obstacle informatio
  high sim_time parameter case
  
  
- sim_time(time interval) mean accepted time for local path moving so every time interval renew.
-##### how can i tune time interval(sim_time)?
+ sim_time(time interval) mean accepted time for local path moving so every time interval renew. and on my computer, not make Local Trajectory at sim_time about 1.2
+#### time interval(sim_time) Parameter
  sim_time to low value will result in limited performance. bcuz insufficient time optimal trajectory (mean, is better more than sapling vel number managed time)
  otherwise, sim_time to high value result in the heavier the computation load. and have long curves it is not flexible in straight case (i checked, but it is    look like better than low value).
   value  of  4.0  seconds  should  be  enough  even  for  high  performance computers.
   
+#### Velocity Sample Parameter
+vx_sample,vy_sample determine how many translational velocity samples, vth_sample controls the number of rotational velocities samples.
+ **The number of samples you would like to take depends on how much computation power you have.** 
+  In most cases we prefer to set vth_samples to be higher than translational velocity samples, because turning is generally a more complicated condition than  moving straight ahead. If you set max_vel_y to be zero, there is no need to have velocity samples in y direction since there will be no usable samples. 
+  
+#### Simulation granularity Parameter
+Simulation granularity  is the step size to take between points on a given trajectory in meters. test if they intersect with any obstacle or not.
+  A lower value meanshigher frequency, which requires more computation power. The default value of 0.025 is generally enough for turtlebot-sized mobile base.
   
   
+### Trajactory Scoring (Objectivce Function)
+DWA Local Planner maximizes an objective function to obtain optimal velocity pairs.<br>
+the value of this objective function relies on three components: progress to goal, clearance from obstacles , forward velocity <br>
+    cost = path_distance_bias∗(distance(m) to path from the endpoint of the trajectory)<br> + goal_distance_bias∗(distance(m) to local goal from the endpoint of the trajectory)<br> + occdist_scale∗(maximum obstacle cost along the trajectory in obstacle cost)<br>
+    **The objective is to get the lowest cost**<br>
+    - path_distance_bias : the weight for how much the local planner should stay close to the global path. A high value will make the local planner prefer trajectories on global path<br>
+    - goal_distance_bias : the weight for how much the robot should attempt to reach the local goal, with whatever path. 이 매개 변수를 늘리면 로봇이 global path에 덜 부착될 수 있습니다.<br>
+    - occdist_scale : the weight for how much the robot should attempt to avoid obstacles.***A high value for this parameter results in indecisive robot that stucks in place***
+    
+#### Goal Tolerance Parameters
+yaw_goal_tolerance : The tolerance in radians for the controller in yaw/rotation when achieving its goal <br>
+xy_goal_tolerance : The tolerance in meters for the controller in the x & y distance when achieving a goal <br>
+latch_xy_goal_tolerance : (bool) If goal tolerance is latched, 로봇이 제자리에서 간단히 회전.
+
+#### Oscillation Prevention Parameters
+Oscillation occur when in either of the x, y, or theta dimensions, positive and negative values are chosen consecutively. To prevent oscillations, when the robot moves in any direction, for the next cycles the opposite direction is marked invalid, until the robot has moved beyond a certain distance from the position where the flag was set. In situations such as passing a doorway, the robot may oscilate back and forth because its local planner is producing paths leading to two opposite directions. ***If the robot keeps oscilating, the navigation stack will let the robot try its recovery behaviors***<br>
+oscillation_reset_dist : How far the robot must travel in meters before oscillation flags are reset <br>
   
 reference : https://arxiv.org/pdf/1706.09068.pdf
