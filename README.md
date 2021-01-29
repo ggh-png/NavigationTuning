@@ -23,12 +23,11 @@ navfn uses  Dijkstra’s  algorithm  to  find  a  global  path  with  minimum  c
 global planner is built as a more flexible replacement of navfn with more options.
 
 3. more detailed global planner parameters<br>
-Sinceglobalplanneris generally the one that we prefer, let us look at some of its key parameters
+Since globalplanneris generally the one that we prefer, let us look at some of its key parameters
 **lethal_cost, neutral_cost, cost_factor are actually determine the quality of the planned global path**<br>
 For lethal_cost, setting it to a low value may result in failure to produce any path, even when a feasible path isobvious.<br> 
-
-    cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue
-incoming costmap cost values are in the range 0 to 252.
+    'cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue'
+<br>incoming costmap cost values are in the range 0 to 252(Generally setting).
 #### (real experiment)
 ![image](https://user-images.githubusercontent.com/70446214/106213583-5cbfbb00-6210-11eb-9a8a-300f4b79f657.png)
 
