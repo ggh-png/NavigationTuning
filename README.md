@@ -1,4 +1,4 @@
-# ROS Navigation Tuning Guide
+# ROS Navigation Tuning Guide and Some Experiment
 # velocity
  In ROS navigationstack, local planner takes in odometry messages (”odom” topic) and outputs velocity commands (”cmd_vel” topic) that controls the robot’s motion.
  Max/min  velocity  and  acceleration  are  two  basic  parameters  for  the  mobile  base.Setting  them  correctly  is  very  helpful  for  optimal  local  planner  behavior.
