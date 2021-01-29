@@ -30,10 +30,12 @@ For lethal_cost, setting it to a low value may result in failure to produce any 
     cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue
 incoming costmap cost values are in the range 0 to 252.
 #### (real experiment)
+![image](https://user-images.githubusercontent.com/70446214/106213583-5cbfbb00-6210-11eb-9a8a-300f4b79f657.png)
 
 this ros navigation default value
 lethal_cost = 253, neutral_cost=50, cost_factor = 3.
 
+![image](https://user-images.githubusercontent.com/70446214/106213599-61846f00-6210-11eb-88be-cd047c2fbddd.png)
 this is modified value 
 lethal_cost = 253, neutral_cost=66, cost_factor = 0.55
 
