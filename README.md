@@ -105,4 +105,33 @@ latch_xy_goal_tolerance : (bool) If goal tolerance is latched, 로봇이 제자�
 Oscillation occur when in either of the x, y, or theta dimensions, positive and negative values are chosen consecutively. To prevent oscillations, when the robot moves in any direction, for the next cycles the opposite direction is marked invalid, until the robot has moved beyond a certain distance from the position where the flag was set. In situations such as passing a doorway, the robot may oscilate back and forth because its local planner is producing paths leading to two opposite directions. ***If the robot keeps oscilating, the navigation stack will let the robot try its recovery behaviors***<br><br>
 oscillation_reset_dist : How far the robot must travel in meters before oscillation flags are reset <br>
   
+  
+## Costmap Parameters
+costmap concepts: 
+there is a global costmap, as well as a local costmap. Costmap parameters tuning is essential for the success of local planners (not only for DWA).  <br>
+글로벌 비용 맵은 내비게이션 스택에 제공된 맵의 장애물을 부풀려서(inflation) 생성 / 로컬 비용 맵은 로봇의 센서가 감지한 장애물을 실시간으로 팽창시켜(inflation) 생성<br>
+Costmap composed : static map layer, obstacle map layer, inflation layer <br>
+a) static map layer : this is given by SLAM map <br>
+b) obstacle map layer : this is include 2D obstacles and 3D obstacles (voxel layer).<br>
+c) inflation layer : for calculate cost about obstacles, ***obstcle cost value propagate to close layer cells***<br>
+
+
+###  Parameters Related with inflation layer
+ Inflation layer is consisted of cells with cost ranging from 0 to 255. and, The value of 255 means Occupied Area and, 0 means free Area.
+ ***inflation_radius Parameter controls how far away the zero cost point is from the obstacles.***
+
+
+
+foot_print : footprint is the contour(윤곽선) of the mobile base (depends on hardware). 
+Usually for safety, we want to have the footprint to be slightly larger than the robot’s real contour.
+
+inflation_radius and cost_scaling_factor are the parameters that determine the inflation.
+
+ (zero cost value mean free area).
+ 
+  
+  
+  
+  
+  
 reference : https://arxiv.org/pdf/1706.09068.pdf
