@@ -119,16 +119,72 @@ c) inflation layer : for calculate cost about obstacles, ***obstcle cost value p
 ###  Parameters Related with inflation layer
  Inflation layer is consisted of cells with cost ranging from 0 to 255. and, The value of 255 means Occupied Area and, 0 means free Area.
  ***inflation_radius Parameter controls how far away the zero cost point is from the obstacles.***
-
-
-
-foot_print : footprint is the contour(윤곽선) of the mobile base (depends on hardware). 
+(image)
+user have to write own robot dimentions 'robot_radius' or 'footprint' parameter. it's mean the contour(윤곽선) of the mobile base.<br>
 Usually for safety, we want to have the footprint to be slightly larger than the robot’s real contour.
+#### (Real Experiment)
+case robot_radius 0.1
 
-inflation_radius and cost_scaling_factor are the parameters that determine the inflation.
+case robot_radius 0.5
 
- (zero cost value mean free area).
+
+Experiment Result : as you can see, this parameter just not mean own robot rviz shape ,but also descirbe definetly collisions about obstacles by sensor data.<br>
+in guess based on reference and my view,
+pink pixel cost vaule is 254 , and this Area mean 'lethal' (or 'W-space').<br>
+pink closed(what's color name??) pixel cost vaule is 253 , and this Area mean 'Inscribed'(or 'C-space').<br>
+this Area effected by 'footprint'(or 'robot_radius') parameter.and, Meaning between W-space and C-space is definetely in collisions ! <br><br>
+
+
+and red color Area look like "Circum scribed" obstacle Area. and pixel cost value is 128.  Meaning ,by this red color Area, is Possibly in collisions.
+above Experiment, this red Area look like similar at two cases all. In my opinion, bcuz two cases modified parameter 'robot_radius' parameter, this area affected only fixel resolutions !.
+
+#### (Real Experiment)
+case footprint parameter set -> width : 0.3  Height : 0.3
+
+
+case footprint parameter set -> width : 0.3  Height : 1.6
+
+Experiment Result : my thought wrong. red Area look like no change. as follows reference, footprint parameter compute inscribed circle as well as circumscribed circle. which are used to inflate obstacle in a way that fits own robots. but i can't check visualization.
+
+
+
+## inflation_radius parameter
+inflation_radius controls how far away the zero cost point is from the obstacle. (zero cost value mean free area).
+#### (Real Experiment)
+ case inflation_radius : 0.3
+ case inflation_radius : 1
  
+ Experiment Result : as you can see, inflation_radius parameter determine propagation free space area. so i can check Blue Area mean definitely not in collision Area, and cost value look like 1~252 . <br><br>
+ 
+then, how can i determine Possibly in collision Area? reference Paper notified footprint parameter determine this Area, but i can't visual check this Area.<br>
+based on http://wiki.ros.org/costmap_2d/hydro/inflation ,  In "Possibly circumscribed" Area, Collision depends on orientation of the robot. so use "Possibly".
+ some user-preference, that put that particular cost value into the map. so '128' cost value based on footprint. 방향이 실제로 중요한 상황에서만 풋프린트를 추적하는 비용을 발생시킬 수 있다는 충분한 정보를 제공.
+
+## cost_scaling_factor parameter
+    exp(-1.0 * cost_scaling_factor * (distance_from_obstacle - inscribed_radius)) * (costmap_2d::INSCRIBED_INFLATED_OBSTACLE - 1)
+since the cost_scaling_factor is multiplied by a negative in the formula, **increasing the factor will decrease the resulting cost values.**
+  
+  in Local_Planner Objective function, cost adjusted 'occdist_scale' , which mean Maximum obstacle cost.  so setting inflation_radius, cost_scaling_factor parameter  well, result in  good plan in case passing in a doorway path. (note : just my opinion have to some test.)
+  
+### Real Experiment
+case low cost_scaling_factor
+  
+ Experiment Result : setting lower cost_scaling_factor is mean that cell cost slope being gentle (not sharp)
+  
+## costmap resolution 
+This parameter can be set separately for local costmap and global costmap. They affect computation load and path planning.
+**With low resolution (>= 0.05), in very narrow passways, the obstacle region may overlap(겹칠) and thus the local planner will not be able to find a path through(ADJ, 관통하는).** <br>
+**For global costmap resolution, it is enough to keep it the same as the resolution of the map provided to navigation stack. <br>
+ If you have more than enough computation power, you should take a look at the resolution of your laser scanner, because when creating the map using gmapping, if the laser scanner has lower resolution than your desired map resolution, there will be a lot of small "unknown dots”  because the laser scanner cannot cover that area**<br><br>
+ 
+ my conclusion --> case in local costmap for local planner, select best resolution considered laser sensor resolution !! <br>
+  ***For  example,  Hokuyo  URG-04LX-UG01  laser  scanner  has  metric  resolution  of 0.01mm.***  Therefore, scanning a map with resolution <= 0.01 will require the robot to rotate several times in order to clear unknown dots.***We found 0.02 to be a sufficientresolution to use.***<br>
+  
+ ## obstacle layer and voxel layer(later describe detail)
+  These two layers are responsible for marking obstacles on the costmap.They can becalled altogether as 'obstacle layer'.the obstacle layer tracks in two  dimensions, whereas the voxel layer tracks in three. Obstacles are marked(detected) or cleared(removed) based on data from robot’s sensors.<br>
+  복셀 레이어는 장애물 레이어에서 상속되며, 레이저 스캔이나 포인트 클라우드 또는 포인트 클라우드2 타입 메시지와 함께 전송된 데이터를 해석하여 장애물 정보를 얻는다. 3D obstacles are eventually projected down tothe 2D costmap for inflation.<br>
+  
+  obstacle_range: The default maximum distance from the robot at which anobstacle will be inserted into the cost map in meters.<br>
   
   
   
