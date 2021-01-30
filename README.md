@@ -193,8 +193,8 @@ In  ROS amcl, the motion model corresponds to a model of the odometry, while the
   
   
   
-  
-  
+## Recovery Behaviors
+An annoying thing about robot navigation is that the robot may get stuck. but, the navigation stack has recovery behaviors built-in Even so, sometimes the robot will exhaust all available recovery behaviors and staty still. The parameters for ROS’s recovery behavior can be left as default ingeneral
   
   
   
