@@ -187,6 +187,16 @@ This parameter can be set separately for local costmap and global costmap. They 
   obstacle_range: The default maximum distance from the robot at which anobstacle will be inserted into the cost map in meters.<br>
   
   
+  ## AMCL
+  amcl , Adaptive Monte Carlo Localization (AMCL), also known as particle filter localization. **work summary : Each sample stores a position, orientation data representing the robot’s pose. When the robot moves, particles are resampled based on their current stateas well as robot’s actions.** We now summarize several issues that may affect the quality of AMCL localization. MCL maintains ***two probabilistic models***, a motion model and a measurement model. <br>
+In  ROS amcl, the motion model corresponds to a model of the odometry, while the measurement model correspond to a model of laser scans. 
+  
+  
+  
+  
+  
+  
+  
   
   
   
