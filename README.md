@@ -173,7 +173,7 @@ since the cost_scaling_factor is multiplied by a negative in the formula, **incr
   
 ### Real Experiment
 case low cost_scaling_factor
-  
+  ![image](https://user-images.githubusercontent.com/70446214/106372837-15bffa00-63b7-11eb-87e3-9d17059b8c93.png)
  Experiment Result : setting lower cost_scaling_factor is mean that cell cost slope being gentle (not sharp)
   
 ## costmap resolution 
