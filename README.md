@@ -121,17 +121,20 @@ c) inflation layer : for calculate cost about obstacles, ***obstcle cost value p
 
 ###  Parameters Related with inflation layer
  Inflation layer is consisted of cells with cost ranging from 0 to 255. and, The value of 255 means Occupied Area and, 0 means free Area.
- ***inflation_radius Parameter controls how far away the zero cost point is from the obstacles.***
-(image)
-user have to write own robot dimentions 'robot_radius' or 'footprint' parameter. it's mean the contour(윤곽선) of the mobile base.<br>
-Usually for safety, we want to have the footprint to be slightly larger than the robot’s real contour.
+ *inflation_radius Parameter controls how far away the zero cost point is from the obstacles.*
+![image](https://user-images.githubusercontent.com/70446214/106372570-42264700-63b4-11eb-9ae1-0cc8ede5e54c.png)
+
+
+<br><br>
+**user have to write own robot dimentions 'robot_radius' or 'footprint' parameter. it's mean the contour(윤곽선) of the mobile base.**<br>
+*Usually for safety, we want to have the footprint to be slightly larger than the robot’s real contour.*
 #### (Real Experiment)
 case robot_radius 0.1
-
+![image](https://user-images.githubusercontent.com/70446214/106372594-7dc11100-63b4-11eb-927b-e9e22e9769f7.png)
 case robot_radius 0.5
+![image](https://user-images.githubusercontent.com/70446214/106372604-9fba9380-63b4-11eb-9eb7-7d6ebf3f2fe1.png)
 
-
-Experiment Result : as you can see, this parameter just not mean own robot rviz shape ,but also descirbe definetly collisions about obstacles by sensor data.<br>
+**Experiment Result : as you can see, this parameter just not mean own robot rviz shape ,but also descirbe definetly collisions about obstacles by sensor data.**<br>
 in guess based on reference and my view,
 pink pixel cost vaule is 254 , and this Area mean 'lethal' (or 'W-space').<br>
 pink closed(what's color name??) pixel cost vaule is 253 , and this Area mean 'Inscribed'(or 'C-space').<br>
