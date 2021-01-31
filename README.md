@@ -101,9 +101,9 @@ Simulation granularity  is the step size to take between points on a given traje
     - occdist_scale : the weight for how much the robot should attempt to avoid obstacles. ***A high value for this parameter results in indecisive robot that stucks in place***
     <br><br>
 ### B) Goal Tolerance Parameters
-yaw_goal_tolerance : The tolerance in radians for the controller in yaw/rotation when achieving its goal <br><br>
+*yaw_goal_tolerance : The tolerance in radians for the controller in yaw/rotation when achieving its goal <br><br>
 xy_goal_tolerance : The tolerance in meters for the controller in the x & y distance when achieving a goal <br><br>
-latch_xy_goal_tolerance : (bool) If goal tolerance is latched, 로봇이 제자리에서 간단히 회전.
+latch_xy_goal_tolerance : (bool) If goal tolerance is latched, 로봇이 제자리에서 간단히 회전.*
 <br><br>
 ### C) Oscillation Prevention Parameters
 Oscillation occur when in either of the x, y, or theta dimensions, positive and negative values are chosen consecutively. To prevent oscillations, when the robot moves in any direction, for the next cycles the opposite direction is marked invalid, until the robot has moved beyond a certain distance from the position where the flag was set. In situations such as passing a doorway, the robot may oscilate back and forth because its local planner is producing paths leading to two opposite directions. ***If the robot keeps oscilating, the navigation stack will let the robot try its recovery behaviors***<br><br>
@@ -131,36 +131,35 @@ c) inflation layer : for calculate cost about obstacles, ***obstcle cost value p
 #### (Real Experiment)
 case robot_radius 0.1
 ![image](https://user-images.githubusercontent.com/70446214/106372594-7dc11100-63b4-11eb-927b-e9e22e9769f7.png)
-case robot_radius 0.5
+case robot_radius 1.0
 ![image](https://user-images.githubusercontent.com/70446214/106372604-9fba9380-63b4-11eb-9eb7-7d6ebf3f2fe1.png)
 
 **Experiment Result : as you can see, this parameter just not mean own robot rviz shape ,but also descirbe definetly collisions about obstacles by sensor data.**<br>
-in guess based on reference and my view,
+In my view based on reference and Experiment Result,
 pink pixel cost vaule is 254 , and this Area mean 'lethal' (or 'W-space').<br>
 pink closed(what's color name??) pixel cost vaule is 253 , and this Area mean 'Inscribed'(or 'C-space').<br>
-this Area effected by 'footprint'(or 'robot_radius') parameter.and, Meaning between W-space and C-space is definetely in collisions ! <br><br>
+this Area effected by 'footprint'(or 'robot_radius') parameter. and, Meaning between W-space and C-space is definetely in collisions ! <br><br>
 
 
 and red color Area look like "Circum scribed" obstacle Area. and pixel cost value is 128.  Meaning ,by this red color Area, is Possibly in collisions.
-above Experiment, this red Area look like similar at two cases all. In my opinion, bcuz two cases modified parameter 'robot_radius' parameter, this area affected only fixel resolutions !.
-
+above Experiment, this red Area look like similar at two cases all. In my opinion, bcuz two cases modified parameter 'robot_radius' parameter, look like this area affected only fixel resolutions 
 #### (Real Experiment)
 case footprint parameter set -> width : 0.3  Height : 0.3
-
+![image](https://user-images.githubusercontent.com/70446214/106372673-9ed63180-63b5-11eb-82cc-1e9eded59b02.png)
 
 case footprint parameter set -> width : 0.3  Height : 1.6
-
-Experiment Result : my thought wrong. red Area look like no change. as follows reference, footprint parameter compute inscribed circle as well as circumscribed circle. which are used to inflate obstacle in a way that fits own robots. but i can't check visualization.
-
-
+![image](https://user-images.githubusercontent.com/70446214/106372680-abf32080-63b5-11eb-835f-982222cab7c1.png)
+Experiment Result : my thought wrong..? red Area no changed. as follows reference, footprint parameter compute inscribed circle as well as circumscribed circle. which are used to inflate obstacle in a way that fits own robots. but i can't check visualization.(아래 추가적인 추론)
 
 ## inflation_radius parameter
 inflation_radius controls how far away the zero cost point is from the obstacle. (zero cost value mean free area).
 #### (Real Experiment)
  case inflation_radius : 0.3
+ ![image](https://user-images.githubusercontent.com/70446214/106372726-1c01a680-63b6-11eb-9429-e5fa01b3bbac.png)
  case inflation_radius : 1
+ ![image](https://user-images.githubusercontent.com/70446214/106372743-30de3a00-63b6-11eb-8afc-2619383a8137.png)
  
- Experiment Result : as you can see, inflation_radius parameter determine propagation free space area. so i can check Blue Area mean definitely not in collision Area, and cost value look like 1~252 . <br><br>
+ Experiment Result : as you can see, inflation_radius parameter determine propagation free space area. so i can check Blue Area mean definitely not in collision Area, and cost value look like 1~252 (by pink closed pixel, Inscribed Area ) . <br><br>
  
 then, how can i determine Possibly in collision Area? reference Paper notified footprint parameter determine this Area, but i can't visual check this Area.<br>
 based on http://wiki.ros.org/costmap_2d/hydro/inflation ,  In "Possibly circumscribed" Area, Collision depends on orientation of the robot. so use "Possibly".
