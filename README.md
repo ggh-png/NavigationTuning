@@ -14,21 +14,23 @@
   There are three global planners that adhere to navcore::BaseGlobalPlanner interface :
       carrot_planner , navfn , global_planner
       
-1. carrot_planner<br>  *It checks if the given goal is an obstacle, and if so it picks an alternative goal close to the original one*
+1. carrot_planner<br>  **It checks if the given goal is an obstacle, and if so it picks an alternative goal close to the original one**
 Eventually it passes this valid goal as a plan to the local planner or controller (internally).
-Therefore, *this planner does not do any global path planning.
-It is helpful if you require your robot to move close to the given goal even if the goal is unreachable.*
+Therefore, **this planner does not do any global path planning.
+It is helpful if you require your robot to move close to the given goal even if the goal is unreachable.**
 
 2. navfn and global planner<br>
-*navfn uses  Dijkstra’s  algorithm  to  find  a  global  path  with  minimum  cost  between start point and end point.*<br>
+**navfn uses  Dijkstra’s  algorithm  to  find  a  global  path  with  minimum  cost** between start point and end point.<br>
 global planner is built as a more flexible replacement of navfn with more options.
 
-3. more detailed global planner parameters<br>
-Since globalplanneris generally the one that we prefer, let us look at some of its key parameters
+3. global planner parameters<br>
+Since global planneris generally the one that we prefer, let us look at some of its key parameters
 **lethal_cost, neutral_cost, cost_factor are actually determine the quality of the planned global path**<br>
-For lethal_cost, setting it to a low value may result in failure to produce any path, even when a feasible path isobvious.<br> 
+For lethal_cost, setting it to a low value may result in failure to produce any path, even when a feasible path is obvious.<br> 
+
     'cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue'
-<br>incoming costmap cost values are in the range 0 to 252(Generally setting).
+    
+   incoming costmap cost values are in the range 0 to 252(Generally setting).
 #### (Real Experiment)
 ![image](https://user-images.githubusercontent.com/70446214/106213583-5cbfbb00-6210-11eb-9a8a-300f4b79f657.png)
 
