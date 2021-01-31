@@ -76,28 +76,29 @@ DWA  maximizes  an  objective  function that depends on (1) the progress to the 
  
  **Experiment Result : sim_time(time interval) mean accepted time for local path moving so every time interval renew.** and on my computer, not make Local Trajectory at sim_time about 1.2<br><br>
 #### 1) time interval(sim_time) Parameter
- sim_time to low value will result in limited performance. bcuz insufficient time optimal trajectory (mean, is better more than sapling vel number managed time)
- otherwise, sim_time to high value result in the heavier the computation load. and have long curves it is not flexible in straight case (i checked, but it is    look like better than low value).
+ **sim_time to low value will result in limited performance. bcuz insufficient time optimal trajectory** (mean, is better more than sapling vel number managed time)
+ otherwise, **sim_time to high value result in the heavier the computation load. and have long curves it is not flexible in straight case (i checked, but it is look like better than low value).**<br>
   value  of  4.0  seconds  should  be  enough  even  for  high  performance computers.
   <br><br>
 #### 2) Velocity Sample Parameter
-vx_sample,vy_sample determine how many translational velocity samples, vth_sample controls the number of rotational velocities samples.
+*vx_sample,vy_sample determine how many translational velocity samples, vth_sample controls the number of rotational velocities samples.*
  **The number of samples you would like to take depends on how much computation power you have.** 
-  In most cases we prefer to set vth_samples to be higher than translational velocity samples, because turning is generally a more complicated condition than  moving straight ahead. If you set max_vel_y to be zero, there is no need to have velocity samples in y direction since there will be no usable samples. 
+  *In most cases we prefer to set vth_samples to be higher than translational velocity samples*, because turning is generally a more complicated condition than moving straight ahead. If you set max_vel_y to be zero, there is no need to have velocity samples in y direction since there will be no usable samples. 
   <br><br>
+  
 #### 3) Simulation granularity Parameter
 Simulation granularity  is the step size to take between points on a given trajectory in meters. test if they intersect with any obstacle or not.
   A lower value meanshigher frequency, which requires more computation power. **The default value of 0.025 is generally enough for turtlebot-sized mobile base.**
   <br><br>
   
 #### 4)Trajactory Scoring (Objectivce Function)
-**DWA Local Planner maximizes an objective function to obtain optimal velocity pairs.<br>
-the value of this objective function relies on three components: progress to goal, clearance from obstacles , forward velocity** <br>
+*DWA Local Planner maximizes an objective function to obtain optimal velocity pairs.*<br>
+**the value of this objective function relies on three components: progress to goal, clearance from obstacles , forward velocity** <br>
     cost = path_distance_bias∗(distance(m) to path from the endpoint of the trajectory)<br> + goal_distance_bias∗(distance(m) to local goal from the endpoint of the trajectory)<br> + occdist_scale∗(maximum obstacle cost along the trajectory in obstacle cost)<br>
     **The objective is to get the lowest cost**<br>
-    - path_distance_bias : the weight for how much the local planner should stay close to the global path. A high value will make the local planner prefer trajectories on global path<br>
-    - goal_distance_bias : the weight for how much the robot should attempt to reach the local goal, with whatever path. 이 매개 변수를 늘리면 로봇이 global path에 덜 부착될 수 있습니다.<br>
-    - occdist_scale : the weight for how much the robot should attempt to avoid obstacles.***A high value for this parameter results in indecisive robot that stucks in place***
+    - path_distance_bias : the weight for how much the local planner should stay close to the global path. A high value will make the local planner prefer trajectories on global path<br><br>
+    - goal_distance_bias : the weight for how much the robot should attempt to reach the local goal, with whatever path. **reference 실험에서는 이 매개 변수를 늘리면 로봇이 global path에 덜 부착될 수 있다고함.**<br><br>
+    - occdist_scale : the weight for how much the robot should attempt to avoid obstacles. ***A high value for this parameter results in indecisive robot that stucks in place***
     <br><br>
 ### B) Goal Tolerance Parameters
 yaw_goal_tolerance : The tolerance in radians for the controller in yaw/rotation when achieving its goal <br><br>
@@ -110,13 +111,12 @@ oscillation_reset_dist : How far the robot must travel in meters before oscillat
   
   
 ## Costmap Parameters
-costmap concepts: 
-there is a global costmap, as well as a local costmap. Costmap parameters tuning is essential for the success of local planners (not only for DWA).  <br>
-글로벌 비용 맵은 내비게이션 스택에 제공된 맵의 장애물을 부풀려서(inflation) 생성 / 로컬 비용 맵은 로봇의 센서가 감지한 장애물을 실시간으로 팽창시켜(inflation) 생성<br>
+**costmap concepts ) there is a global costmap, as well as a local costmap. Costmap parameters tuning is essential for the success of local planners (not only for DWA).**<br>
+*글로벌 비용 맵은 내비게이션 스택에 제공된 맵의 장애물을 부풀려서(inflation) 생성 / 로컬 비용 맵은 로봇의 센서가 감지한 장애물을 실시간으로 팽창시켜(inflation) 생성<br>*<br>
 Costmap composed : static map layer, obstacle map layer, inflation layer <br>
-a) static map layer : this is given by SLAM map <br>
-b) obstacle map layer : this is include 2D obstacles and 3D obstacles (voxel layer).<br>
-c) inflation layer : for calculate cost about obstacles, ***obstcle cost value propagate to close layer cells***<br>
+a) static map layer : this is given by SLAM map <br><br>
+b) obstacle map layer : this is include 2D obstacles and 3D obstacles (voxel layer).<br><br>
+c) inflation layer : for calculate cost about obstacles, ***obstcle cost value propagate to close layer cells***<br><br>
 
 
 ###  Parameters Related with inflation layer
