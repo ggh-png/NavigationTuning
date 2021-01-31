@@ -161,20 +161,24 @@ inflation_radius controls how far away the zero cost point is from the obstacle.
  
  Experiment Result : as you can see, inflation_radius parameter determine propagation free space area. so i can check Blue Area mean definitely not in collision Area, and cost value look like 1~252 (by pink closed pixel, Inscribed Area ) . <br><br>
  
-then, how can i determine Possibly in collision Area? reference Paper notified footprint parameter determine this Area, but i can't visual check this Area.<br>
-based on http://wiki.ros.org/costmap_2d/hydro/inflation ,  In "Possibly circumscribed" Area, Collision depends on orientation of the robot. so use "Possibly".
- some user-preference, that put that particular cost value into the map. so '128' cost value based on footprint. 방향이 실제로 중요한 상황에서만 풋프린트를 추적하는 비용을 발생시킬 수 있다는 충분한 정보를 제공.
+
+영역에 따른 결론(just in my opinion) 
+![image](https://user-images.githubusercontent.com/70446214/106372570-42264700-63b4-11eb-9ae1-0cc8ede5e54c.png)
+![image](https://user-images.githubusercontent.com/70446214/106372594-7dc11100-63b4-11eb-927b-e9e22e9769f7.png)
+핑크색 -> lethal 영역을 의미할 것임. 핑크를 둘러싼 색 -> C-Space로 definetly collision 영역을 의미한다.(위의 실험 결과 추론 가능) 하지만, 실제 네비게이션을 수행했을 때, 이 c-space를 지나치는 경로를 허용할 때가 있었다는 것. 이는 더 테스트 해야됨.
+
+
 
 ## cost_scaling_factor parameter
     exp(-1.0 * cost_scaling_factor * (distance_from_obstacle - inscribed_radius)) * (costmap_2d::INSCRIBED_INFLATED_OBSTACLE - 1)
 since the cost_scaling_factor is multiplied by a negative in the formula, **increasing the factor will decrease the resulting cost values.**
   
-  in Local_Planner Objective function, cost adjusted 'occdist_scale' , which mean Maximum obstacle cost.  so setting inflation_radius, cost_scaling_factor parameter  well, result in  good plan in case passing in a doorway path. (note : just my opinion have to some test.)
+  in Local_Planner Objective function, cost adjusted 'occdist_scale' , which mean Maximum obstacle cost. so setting inflation_radius, cost_scaling_factor parameter  well, result in  good plan in case passing in a doorway path. (note : just my opinion have to some test.)
   
 ### Real Experiment
-case low cost_scaling_factor
+case very low cost_scaling_factor
   ![image](https://user-images.githubusercontent.com/70446214/106372837-15bffa00-63b7-11eb-87e3-9d17059b8c93.png)
- Experiment Result : setting lower cost_scaling_factor is mean that cell cost slope being gentle (not sharp)
+ Experiment Result : **setting lower cost_scaling_factor is mean that cell cost slope being gentle (not sharp)**
   
 ## costmap resolution 
 This parameter can be set separately for local costmap and global costmap. They affect computation load and path planning.
@@ -183,19 +187,19 @@ This parameter can be set separately for local costmap and global costmap. They 
  If you have more than enough computation power, you should take a look at the resolution of your laser scanner, because when creating the map using gmapping, if the laser scanner has lower resolution than your desired map resolution, there will be a lot of small "unknown dots”  because the laser scanner cannot cover that area**<br><br>
  
  my conclusion --> case in local costmap for local planner, select best resolution considered laser sensor resolution !! <br>
-  ***For  example,  Hokuyo  URG-04LX-UG01  laser  scanner  has  metric  resolution  of 0.01mm.***  Therefore, scanning a map with resolution <= 0.01 will require the robot to rotate several times in order to clear unknown dots.***We found 0.02 to be a sufficientresolution to use.***<br>
+  *For  example,  Hokuyo  URG-04LX-UG01  laser  scanner  has  metric  resolution  of 0.01mm.*  Therefore, scanning a map with resolution <= 0.01 will require the robot to rotate several times in order to clear unknown dots. *We found 0.02 to be a sufficient resolution to use.*<br>
   
- ## obstacle layer and voxel layer(later describe detail)
-  These two layers are responsible for marking obstacles on the costmap.They can becalled altogether as 'obstacle layer'.the obstacle layer tracks in two  dimensions, whereas the voxel layer tracks in three. Obstacles are marked(detected) or cleared(removed) based on data from robot’s sensors.<br>
+ ## obstacle layer and voxel layer (later describe detail)
+  *These two layers are responsible for marking obstacles on the costmap. They can be called altogether as 'obstacle layer'.<br>
+  the obstacle layer tracks in two dimensions, whereas the voxel layer tracks in three.<br>
+  Obstacles are marked(detected) or cleared(removed) based on data from robot’s sensors.<br>*
   복셀 레이어는 장애물 레이어에서 상속되며, 레이저 스캔이나 포인트 클라우드 또는 포인트 클라우드2 타입 메시지와 함께 전송된 데이터를 해석하여 장애물 정보를 얻는다. 3D obstacles are eventually projected down tothe 2D costmap for inflation.<br>
   
   obstacle_range: The default maximum distance from the robot at which anobstacle will be inserted into the cost map in meters.<br>
   
-  
   ## AMCL
-  amcl , Adaptive Monte Carlo Localization (AMCL), also known as particle filter localization. **work summary : Each sample stores a position, orientation data representing the robot’s pose. When the robot moves, particles are resampled based on their current stateas well as robot’s actions.** We now summarize several issues that may affect the quality of AMCL localization. MCL maintains ***two probabilistic models***, a motion model and a measurement model. <br>
-In  ROS amcl, the motion model corresponds to a model of the odometry, while the measurement model correspond to a model of laser scans. 
-  
+  amcl , Adaptive Monte Carlo Localization (AMCL), also known as particle filter localization. **work summary : Each sample stores a position, orientation data representing the robot’s pose. When the robot moves, particles are resampled based on their current stateas well as robot’s actions.** We now summarize several issues that may affect the quality of AMCL localization. *MCL maintains two probabilistic models, a motion model and a measurement model*. <br>
+In  ROS amcl, *the motion model corresponds to a model of the odometry, while the measurement model correspond to a model of laser scans.* 
   
   
 ## Recovery Behaviors
