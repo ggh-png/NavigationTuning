@@ -8,19 +8,19 @@
  
  For safety, we prefer to set maximum translational and rotational velocities to belower than their actual maximum values.
 
- To use the movebase node in navigation stack, we need to have a global planner and a local planner  <hr/>
-<br>
+ To use the movebase node in navigation stack, we need to have a global planner and a local planner<hr/>
+
  # Global Planner
   There are three global planners that adhere to navcore::BaseGlobalPlanner interface :
       carrot_planner , navfn , global_planner
       
-1. carrot_planner<br>  It checks if the given goal is an obstacle, and if so it picks an alternative goal close to the original one
+1. carrot_planner<br>  *It checks if the given goal is an obstacle, and if so it picks an alternative goal close to the original one*
 Eventually it passes this valid goal as a plan to the local planner or controller (internally).
-Therefore, **this planner does not do any global path planning.
-It is helpful if you require your robot to move close to the given goal even if the goal is unreachable.**
+Therefore, *this planner does not do any global path planning.
+It is helpful if you require your robot to move close to the given goal even if the goal is unreachable.*
 
 2. navfn and global planner<br>
-navfn uses  Dijkstra’s  algorithm  to  find  a  global  path  with  minimum  cost  between start point and end point.
+*navfn uses  Dijkstra’s  algorithm  to  find  a  global  path  with  minimum  cost  between start point and end point.*<br>
 global planner is built as a more flexible replacement of navfn with more options.
 
 3. more detailed global planner parameters<br>
