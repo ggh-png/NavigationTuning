@@ -30,7 +30,8 @@ For lethal_cost, setting it to a low value may result in failure to produce any 
 
     'cost = COSTNEUTRAL + COSTFACTOR * costmapcostvalue'
     
-   incoming costmap cost values are in the range 0 to 252(Generally setting).
+   incoming costmap cost values are in the range 0 to 252(Generally setting).<br><br>
+   **parameter setting Example ) COST NEUTRAL 값이 50 일 때, COST_FACTOR은 약 0.8 이어야 한다. 이는 입력 값이 출력 범위에 고르게 분산되도록 해주는 역할을 수행한다.**
 #### (Real Experiment)
 ![image](https://user-images.githubusercontent.com/70446214/106213583-5cbfbb00-6210-11eb-9a8a-300f4b79f657.png)
 
@@ -57,15 +58,15 @@ dwa_local_planner uses  Dynamic  Window  Approach  (DWA)  algorithm.<br>
  4. highest - scoring send associated velocity
  5. repeat <br>
  
-the goal of DWA is to produce (v,w) pair. based on highest scoring function (Max Objective function , cost)  
-DWA consider hardware limit like transitional , rotational velocity , accel , hardware size. 
+**the goal of DWA is to produce (v,w) pair. based on highest scoring function<br>  
+DWA consider hardware limit like transitional , rotational velocity , accel , hardware size.** 
 DWA  maximizes  an  objective  function that depends on (1) the progress to the target, (2) clearance from obstacles, and (3) forward velocity to produce the optimal velocity pair.
-This DWA planner depends on the local costmap which provides obstacle information. therfore, ***tuning the parameters for the local costmap is crucial for optimal behavior of DWA local planner.*** 
+***This DWA planner depends on the local costmap which provides obstacle information. therfore, tuning the parameters for the local costmap is crucial for optimal behavior of DWA local planner.*** 
 <br><br>
-### Forward Simulation Parameter
+### A) Forward Simulation Parameter
 
  In this step, the local planner takes the velocity samples (discard bad guys , select optimal cost).<br>
- Each velocity sampleis  simulated as if it is applied to the robot for a set time interval (sim_time)
+ Each velocity sampleis simulated as if it is applied to the robot for a set time interval (sim_time)
  <br>
 #### (Real Experiment)
  low sim_time parameter case
@@ -73,37 +74,37 @@ This DWA planner depends on the local costmap which provides obstacle informatio
  high sim_time parameter case
 ![image](https://user-images.githubusercontent.com/70446214/106336356-0f0b8700-62d2-11eb-8667-0895c01d21e9.png) 
  
- Experiment Result : sim_time(time interval) mean accepted time for local path moving so every time interval renew. and on my computer, not make Local Trajectory at sim_time about 1.2<br><br>
-#### time interval(sim_time) Parameter
+ **Experiment Result : sim_time(time interval) mean accepted time for local path moving so every time interval renew.** and on my computer, not make Local Trajectory at sim_time about 1.2<br><br>
+#### 1) time interval(sim_time) Parameter
  sim_time to low value will result in limited performance. bcuz insufficient time optimal trajectory (mean, is better more than sapling vel number managed time)
  otherwise, sim_time to high value result in the heavier the computation load. and have long curves it is not flexible in straight case (i checked, but it is    look like better than low value).
   value  of  4.0  seconds  should  be  enough  even  for  high  performance computers.
   <br><br>
-#### Velocity Sample Parameter
+#### 2) Velocity Sample Parameter
 vx_sample,vy_sample determine how many translational velocity samples, vth_sample controls the number of rotational velocities samples.
  **The number of samples you would like to take depends on how much computation power you have.** 
   In most cases we prefer to set vth_samples to be higher than translational velocity samples, because turning is generally a more complicated condition than  moving straight ahead. If you set max_vel_y to be zero, there is no need to have velocity samples in y direction since there will be no usable samples. 
   <br><br>
-#### Simulation granularity Parameter
+#### 3) Simulation granularity Parameter
 Simulation granularity  is the step size to take between points on a given trajectory in meters. test if they intersect with any obstacle or not.
-  A lower value meanshigher frequency, which requires more computation power. The default value of 0.025 is generally enough for turtlebot-sized mobile base.
+  A lower value meanshigher frequency, which requires more computation power. **The default value of 0.025 is generally enough for turtlebot-sized mobile base.**
   <br><br>
   
-### Trajactory Scoring (Objectivce Function)
-DWA Local Planner maximizes an objective function to obtain optimal velocity pairs.<br>
-the value of this objective function relies on three components: progress to goal, clearance from obstacles , forward velocity <br>
+#### 4)Trajactory Scoring (Objectivce Function)
+**DWA Local Planner maximizes an objective function to obtain optimal velocity pairs.<br>
+the value of this objective function relies on three components: progress to goal, clearance from obstacles , forward velocity** <br>
     cost = path_distance_bias∗(distance(m) to path from the endpoint of the trajectory)<br> + goal_distance_bias∗(distance(m) to local goal from the endpoint of the trajectory)<br> + occdist_scale∗(maximum obstacle cost along the trajectory in obstacle cost)<br>
     **The objective is to get the lowest cost**<br>
     - path_distance_bias : the weight for how much the local planner should stay close to the global path. A high value will make the local planner prefer trajectories on global path<br>
     - goal_distance_bias : the weight for how much the robot should attempt to reach the local goal, with whatever path. 이 매개 변수를 늘리면 로봇이 global path에 덜 부착될 수 있습니다.<br>
     - occdist_scale : the weight for how much the robot should attempt to avoid obstacles.***A high value for this parameter results in indecisive robot that stucks in place***
     <br><br>
-#### Goal Tolerance Parameters
+### B) Goal Tolerance Parameters
 yaw_goal_tolerance : The tolerance in radians for the controller in yaw/rotation when achieving its goal <br><br>
 xy_goal_tolerance : The tolerance in meters for the controller in the x & y distance when achieving a goal <br><br>
 latch_xy_goal_tolerance : (bool) If goal tolerance is latched, 로봇이 제자리에서 간단히 회전.
 <br><br>
-#### Oscillation Prevention Parameters
+### C) Oscillation Prevention Parameters
 Oscillation occur when in either of the x, y, or theta dimensions, positive and negative values are chosen consecutively. To prevent oscillations, when the robot moves in any direction, for the next cycles the opposite direction is marked invalid, until the robot has moved beyond a certain distance from the position where the flag was set. In situations such as passing a doorway, the robot may oscilate back and forth because its local planner is producing paths leading to two opposite directions. ***If the robot keeps oscilating, the navigation stack will let the robot try its recovery behaviors***<br><br>
 oscillation_reset_dist : How far the robot must travel in meters before oscillation flags are reset <br>
   
